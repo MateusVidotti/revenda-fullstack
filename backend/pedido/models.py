@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from cliente.models import Cliente
 from produto.models import Produto
@@ -23,21 +24,32 @@ class Pedido(models.Model):
         return total
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # Salva o pedido primeiro (precisa de ID)
+        # Primeiro calcula o total antes de salvar
+        super().save(*args, **kwargs)  # Salva para garantir que o ID já existe
         self.total = self.calcular_total()
-        super().save(update_fields=['total'])  # Atualiza só o campo total
+        super().save(update_fields=['total'])
 
 
 class ItemPedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='itens')
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     quantidade = models.IntegerField()
-    preco_unitario = models.DecimalField(max_digits=10, decimal_places=2)
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return f"{self.quantidade}x {self.produto.nome} (Pedido {self.pedido.id})"
+    valor_unitario = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        self.subtotal = self.quantidade * self.preco_unitario
+        if not self.valor_unitario:
+            self.valor_unitario = self.produto.preco_venda
+
+        # ⚠️ Verifica se há estoque suficiente
+        if self.pk is None:  # Só valida na criação do item (não na edição)
+            if self.quantidade > self.produto.estoque_atual:
+                raise ValidationError(f"Estoque insuficiente para o produto '{self.produto.nome}'. Disponível: {self.produto.estoque_atual}, solicitado: {self.quantidade}.")
+
         super().save(*args, **kwargs)
+
+    @property
+    def subtotal(self):
+        return self.quantidade * self.valor_unitario
+
+    def __str__(self):
+        return f"{self.quantidade}x {self.produto.nome}"

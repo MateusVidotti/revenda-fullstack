@@ -71,7 +71,8 @@ INSTALLED_APPS = [
     "estoque",
     "pagamento",
     "pedido",
-    'produto'
+    'produto',
+    'ressuprimento'
 ]
 
 MIDDLEWARE = [
