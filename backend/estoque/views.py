@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework import generics
+from produto.models import Produto
+from .serializers import RelatorioEstoqueSerializer
 
-# Create your views here.
+
+class RelatorioEstoqueView(generics.ListAPIView):
+    queryset = Produto.objects.all()
+    serializer_class = RelatorioEstoqueSerializer
+

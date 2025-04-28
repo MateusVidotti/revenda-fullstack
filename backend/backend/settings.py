@@ -72,7 +72,8 @@ INSTALLED_APPS = [
     "pagamento",
     "pedido",
     'produto',
-    'ressuprimento'
+    'ressuprimento',
+    'revendedor'
 ]
 
 MIDDLEWARE = [
