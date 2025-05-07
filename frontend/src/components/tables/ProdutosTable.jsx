@@ -20,7 +20,6 @@ function ProdutosTable() {
       .then((res) => res.data)
       .then((data) => {
         setRows(data);
-        console.log(data)
       })
       .catch((err) => alert(err))
   }

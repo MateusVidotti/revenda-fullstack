@@ -6,7 +6,7 @@ import FormDataGrid from '../layout/FormDataGrid';
 import { useNavigate } from 'react-router-dom';
 import api from "../../api";
 
-function RecebimentosTable() {
+function RessuprimentoTable() {
   const [rows, setRows] = useState([])
   const navigate = useNavigate()
 
@@ -16,21 +16,20 @@ function RecebimentosTable() {
 
   const getAll = () => {
     api
-      .get('/api/recebimentos/')
+      .get('/api/ressuprimentos/')
       .then((res) => res.data)
       .then((data) => {
         setRows(data);
-        console.log(data)
       })
       .catch((err) => alert(err))
   }
 
   const deleteRow = (id) => {
     api
-        .delete(`/api/recebimentos/${id}/`)
+        .delete(`/api/ressuprimentos/${id}/`)
         .then((res) => {
-            if (res.status === 204) alert("Recebimento deletado!");
-            else alert("Falha ao deletar recebimento.");
+            if (res.status === 204) alert("Ressuprimento deletado!");
+            else alert("Falha ao deletar Ressuprimento.");
             getAll();
         })
         .then(data => {
@@ -41,7 +40,7 @@ function RecebimentosTable() {
 };
   
   const handleEdit = (id) => {
-    navigate(`/recebimento/editar/${id}`);
+    navigate(`/ressuprimento/editar/${id}`);
   };
 
   const handleDelete = (id) => {
@@ -50,12 +49,12 @@ function RecebimentosTable() {
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'aluno_nome', headerName: 'Aluno', width: 150 },
-    { field: 'descricao', headerName: 'Descrição', width: 300 },
-    { field: 'valor', headerName: 'Valor', width: 150 },
-    { field: 'data_emissao', headerName: 'Data emissão', width: 200 },
-    { field: 'data_vencimento', headerName: 'Data vencimento', width: 200 },
-    { field: 'status', headerName: 'Status', type: 'text', width: 100 },
+    { field: 'produto_nome', headerName: 'Nome do produto', type: 'text', width: 150 },
+    { field: 'quantidade', headerName: 'Quantidade', width: 70 },
+    { field: 'total', headerName: 'Total', width: 70 },
+    { field: 'data_pedido', headerName: 'Demanda Data Pedido', width: 100 },
+    { field: 'data_recebimento', headerName: 'Data recebimento', width: 100 },
+    { field: 'status', headerName: 'Status recebimento', width: 150 },
     {
       field: 'Opções',
       headerName: 'Opções',
@@ -66,6 +65,7 @@ function RecebimentosTable() {
             color="primary" 
             onClick={() => handleEdit(params.id)}
             aria-label="editar"
+            sx={{ backgroundColor: '#white', color: '#7A9E7E', '&:hover': { color: '#D8A39D' } }}
           >
             <EditIcon />
           </IconButton>
@@ -86,4 +86,4 @@ function RecebimentosTable() {
   );
 }
 
-export default RecebimentosTable
+export default RessuprimentoTable

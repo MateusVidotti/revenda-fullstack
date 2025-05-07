@@ -41,9 +41,7 @@ const PagamentoForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    console.log(formData);
-    
+    setFormData({ ...formData, [name]: value });   
   };
 
   const validate = () => {
@@ -55,7 +53,6 @@ const PagamentoForm = () => {
     if (!formData.data_vencimento) newErrors.data_vencimento = 'Data de vencimento é obrigatória';
     if (!formData.status) newErrors.status = 'Status é obrigatório';
     setErrors(newErrors);
-    console.log(errors)
     return Object.keys(newErrors).length === 0;
   };
 

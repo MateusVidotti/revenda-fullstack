@@ -1,28 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Typography, Grid, Box, Avatar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
+import { Line, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, BarElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
+
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ExpenseIcon from '@mui/icons-material/RemoveCircleOutline';
 import BalanceIcon from '@mui/icons-material/AccountBalanceWallet';
+import PerfilRevendedora from '../PerfilRevendedora';
 import api from "../../api";
 
 // Registra as escalas e componentes necessários
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler);
 
 const FinancialDashboard = () => {
+
+    const [revendedor, setRevendedor] = useState(null);
+
+    useEffect(() => {
+    getDashData();
+    getChartData();
+    getRevendedor();
+    }, []);
+
+    const getRevendedor = async () => {
+    try {
+        const res = await api.get('/api/revendedores/'); // ajuste o endpoint se necessário
+        if (res.data.length > 0) setRevendedor(res.data[0]); // supondo 1 revendedor
+    } catch (err) {
+        alert('Erro ao carregar revendedor');
+    }
+    };
+
+    const [categoriaData, setCategoriaData] = useState({
+        Feminino: { labels: [], data: [] },
+        Masculino: { labels: [], data: [] },
+        "Infanto Juvenil": { labels: [], data: [] }
+    });
+    const [periodo, setPeriodo] = useState('1'); // 1 mês
+    const [tipoInfo, setTipoInfo] = useState('total_vendido');
+
     const [data, setData] = useState({});
     const [chartData, setChartData] = useState({
         faturamento: { labels: [], data: [] },
         pagamento_total: { labels: [], data: [] },
         saldo: { labels: [], data: [] }
     });
-    const [selectedClass, setSelectedClass] = useState('total'); // Estado para o seletor de classe de despesas
-
-    useEffect(() => {
-        getDashData();
-        getChartData();
-    }, []);
 
     const getDashData = () => {
         api
@@ -37,25 +59,46 @@ const FinancialDashboard = () => {
                 api.get('/api/relatorio-faturamento/'),
                 api.get('/api/relatorio-pagamento/'),
                 api.get('/api/relatorio-saldo/'),
-            ]);
-
+            ]);     
             setChartData({
                 faturamento: faturamentoRes.data,
-                pagamento_total: { labels: pagamentoRes.data.labels, data: pagamentoRes.data.data.total }, 
-                pagamento_pessoal: { labels: pagamentoRes.data.labels, data: pagamentoRes.data.data.pessoal },
-                pagamento_encargos: { labels: pagamentoRes.data.labels, data: pagamentoRes.data.data.encargos },
-                pagamento_administracao: { labels: pagamentoRes.data.labels, data: pagamentoRes.data.data.administracao },
-                saldo: saldoRes.data
+                pagamento_total: pagamentoRes.data,
+                saldo: saldoRes.data,
             });
         } catch (err) {
             alert('Erro ao carregar os dados: ' + err);
         }
     };
 
-    // Função para lidar com a mudança da classe de despesa
-    const handleClassChange = (event) => {
-        setSelectedClass(event.target.value);
+    const fetchCategoriaData = async () => {
+        const categorias = ['Feminino', 'Masculino', 'Infanto Juvenil'];
+        try {
+            const promises = categorias.map(cat =>
+                api.get(`/api/relatorio-vendas/?periodo=mes&meses=${periodo}&categoria=${cat}`)
+            );
+            const responses = await Promise.all(promises);
+    
+            const newData = {};
+            responses.forEach((res, index) => {
+                const categoria = categorias[index];
+                const labels = res.data.map(item => item.produto_nome);
+                const data = res.data.map(item => item[tipoInfo]);
+                newData[categoria] = { labels, data };
+            });
+            setCategoriaData(newData);
+        } catch (error) {
+            alert('Erro ao buscar dados de categorias: ' + error);
+        }
     };
+
+    useEffect(() => {
+        getDashData();
+        getChartData();
+    }, []);
+
+    useEffect(() => {
+        fetchCategoriaData();
+    }, [periodo, tipoInfo]);
 
     const lineChartOptions = {
         responsive: true,
@@ -63,6 +106,18 @@ const FinancialDashboard = () => {
             legend: { display: false },
         },
     };
+
+    const barChartOptions = {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      };
 
     const createLineChartData = (label, { labels, data }, color) => ({
         labels,
@@ -78,10 +133,30 @@ const FinancialDashboard = () => {
         ],
     });
 
+    const createBarChartData = (label, labels, data, color) => ({
+        labels,
+        datasets: [
+            {
+                label,
+                data,
+                backgroundColor: color,
+            }
+        ]
+    });
+
     return (
         <div>
             <Grid container spacing={3} justifyContent="center">
-                <Grid item xs={12} sm={4} md={4} lg={4}>
+                <Grid item xs={12} sm={3} md={3} lg={3}>
+                    <Card sx={{ maxHeight: '95px' }}>
+                        <CardContent>
+                            <Box display="flex" alignItems="center">
+                                <PerfilRevendedora revendedor={revendedor || { nivel: 'Semente', id: 1 }} onNivelChange={(nivel) => {}} />
+                            </Box>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={3} md={3} lg={3}>
                     <Card>
                         <CardContent>
                             <Box display="flex" alignItems="center">
@@ -89,14 +164,14 @@ const FinancialDashboard = () => {
                                     <AttachMoneyIcon />
                                 </Avatar>
                                 <Box>
-                                    <Typography variant="subtitle2">Total Faturamento</Typography>
+                                    <Typography variant="subtitle2">Recebimento de Vendas</Typography>
                                     <Typography variant="h6">{data.total_faturamento}</Typography>
                                 </Box>
                             </Box>
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={12} sm={4} md={4} lg={4}>
+                <Grid item xs={12} sm={3} md={3} lg={3}>
                     <Card>
                         <CardContent>
                             <Box display="flex" alignItems="center">
@@ -104,14 +179,14 @@ const FinancialDashboard = () => {
                                     <ExpenseIcon />
                                 </Avatar>
                                 <Box>
-                                    <Typography variant="subtitle2">Total Despesas</Typography>
+                                    <Typography variant="subtitle2">Pagamento de Produtos</Typography>
                                     <Typography variant="h6">{data.total_despesas}</Typography>
                                 </Box>
                             </Box>
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={12} sm={4} md={4} lg={4}>
+                <Grid item xs={12} sm={3} md={3} lg={3}>
                     <Card>
                         <CardContent>
                             <Box display="flex" alignItems="center">
@@ -133,7 +208,7 @@ const FinancialDashboard = () => {
                     <Card>
                         <CardContent>
                             <Typography variant="subtitle2">Faturamento - Últimos 12 Meses</Typography>
-                            <Line data={createLineChartData("Faturamento", chartData.faturamento, "rgba(0, 128, 0, 1)")} options={lineChartOptions} />
+                            <Line data={createLineChartData("Faturamento", chartData.faturamento, "rgba(0, 255, 0, 1)")} options={lineChartOptions} />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -142,21 +217,8 @@ const FinancialDashboard = () => {
                         <CardContent>
                             <Box display="flex" alignItems="center" justifyContent="space-between">
                                 <Typography variant="subtitle2">Despesas - Últimos 12 Meses</Typography>
-                                <FormControl variant="outlined" size="small" sx={{ minWidth: 115 }}>
-                                    <InputLabel>Classe despesa</InputLabel>
-                                    <Select
-                                        value={selectedClass}
-                                        onChange={handleClassChange}
-                                        label="Classe despesa"
-                                    >
-                                        <MenuItem value="total">Total</MenuItem>
-                                        <MenuItem value="pessoal">Pessoal</MenuItem>
-                                        <MenuItem value="encargos">Encargos</MenuItem>
-                                        <MenuItem value="administracao">Administração</MenuItem>
-                                    </Select>
-                                </FormControl>
                             </Box>
-                            <Line data={createLineChartData("Despesas", chartData[`pagamento_${selectedClass}`], "rgba(255, 0, 0, 1)")} options={lineChartOptions} />
+                            <Line data={createLineChartData("Despesas",  chartData.pagamento_total, "rgba(255, 0, 0, 1)")} options={lineChartOptions} />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -169,76 +231,44 @@ const FinancialDashboard = () => {
                     </Card>
                 </Grid>
             </Grid>
-
-            <Grid container spacing={3} mt={2}>
-                <Grid item xs={12}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="subtitle1">Próximos Pagamentos</Typography>
-                            <TableContainer component={Paper}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Fornecedor</TableCell>
-                                            <TableCell>Classe</TableCell>
-                                            <TableCell>Descrição</TableCell>
-                                            <TableCell>Valor</TableCell>
-                                            <TableCell>Data Vencimento</TableCell>
-                                            <TableCell>Status</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {data.tb_pagamentos && data.tb_pagamentos.map((pagamento, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>{pagamento.fornecedor_nome}</TableCell>
-                                                <TableCell>{pagamento.classe}</TableCell>
-                                                <TableCell>{pagamento.descricao}</TableCell>
-                                                <TableCell>{pagamento.valor}</TableCell>
-                                                <TableCell>{pagamento.data_vencimento}</TableCell>
-                                                <TableCell>{pagamento.status}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
-
-            <Grid container spacing={3} mt={2}>
-                <Grid item xs={12}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="subtitle1">Próximos Recebimentos</Typography>
-                            <TableContainer component={Paper}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Aluno</TableCell>
-                                            <TableCell>Descrição</TableCell>
-                                            <TableCell>Valor</TableCell>
-                                            <TableCell>Data Vencimento</TableCell>
-                                            <TableCell>Status</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {data.tb_recebimentos && data.tb_recebimentos.map((recebimento, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>{recebimento.aluno_nome}</TableCell>
-                                                <TableCell>{recebimento.descricao}</TableCell>
-                                                <TableCell>{recebimento.valor}</TableCell>
-                                                <TableCell>{recebimento.data_vencimento}</TableCell>
-                                                <TableCell>{recebimento.status}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
+            <Box display="flex" gap={2} my={2}>
+                <FormControl>
+                    <InputLabel>Período</InputLabel>
+                    <Select value={periodo} onChange={e => setPeriodo(e.target.value)} label="Período">
+                        <MenuItem value="1">Último mês</MenuItem>
+                        <MenuItem value="6">Últimos 6 meses</MenuItem>
+                        <MenuItem value="12">Último ano</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl>
+                    <InputLabel>Tipo de Informação</InputLabel>
+                    <Select value={tipoInfo} onChange={e => setTipoInfo(e.target.value)} label="Tipo de Informação">
+                        <MenuItem value="total_vendido">Total Vendido</MenuItem>
+                        <MenuItem value="valor_total">Valor Total</MenuItem>
+                        <MenuItem value="lucro_total">Lucro Total</MenuItem>
+                    </Select>
+                </FormControl>
+            </Box>
+            <Grid container spacing={3}>
+                {['Feminino', 'Masculino', 'Infanto Juvenil'].map((categoria, idx) => (
+                    <Grid item xs={12} md={4} key={categoria}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="subtitle2">{categoria}</Typography>
+                                <Bar
+                                    data={createBarChartData(
+                                        tipoInfo,
+                                        categoriaData[categoria].labels,
+                                        categoriaData[categoria].data,
+                                        ['#E91E63', '#3F51B5', '#FF9800'][idx]
+                                    )}
+                                    options={{ responsive: true, plugins: { legend: { display: false } } }}
+                                />
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>         
         </div>
     );
 };

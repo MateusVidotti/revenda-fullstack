@@ -7,3 +7,4 @@ class ProdutoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Produto
         fields = '__all__'
+

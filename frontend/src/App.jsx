@@ -9,10 +9,10 @@ import Clientes from './pages/Clientes'
 import ClienteForm from "./components/forms/ClienteForm"
 import Produtos from './pages/Produtos'
 import ProdutoForm from "./components/forms/ProdutoForm"
-import Pagamentos from './pages/Pagamentos'
-import PagamentoForm from "./components/forms/PagamentoForm"
-import Recebimentos from './pages/Recebimentos'
-import RecebimentoForm from "./components/forms/RecebimentoForm"
+import Ressuprimentos from './pages/Ressuprimentos'
+import RessuprimentoForm from "./components/forms/RessuprimentoForm"
+import Pedidos from './pages/Pedidos'
+import PedidoForm from "./components/forms/PedidoForm"
 
 
 function Logout() {
@@ -88,50 +88,50 @@ function App() {
             </ProtectedRoute>
           } />
         <Route
-          path="/pagamentos"
+          path="/ressuprimentos"
           element={
             <ProtectedRoute>
-              <Pagamentos />
+              <Ressuprimentos />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/pagamento/novo"
+          path="/ressuprimento/novo"
           element={
             <ProtectedRoute>
-              <PagamentoForm />
+              <RessuprimentoForm />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/pagamento/editar/:id"
+          path="/ressuprimento/editar/:id"
           element={
             <ProtectedRoute>
-              <PagamentoForm />
+              <RessuprimentoForm />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/recebimentos"
+          path="/pedidos"
           element={
             <ProtectedRoute>
-              <Recebimentos />
+              <Pedidos />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/recebimento/novo"
+          path="/pedido/novo"
           element={
             <ProtectedRoute>
-              <RecebimentoForm />
+              <PedidoForm />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/recebimento/editar/:id"
+          path="/pedido/editar/:id"
           element={
             <ProtectedRoute>
-              <RecebimentoForm />
+              <PedidoForm />
             </ProtectedRoute>
           }
         />

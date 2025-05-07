@@ -6,7 +6,7 @@ import FormDataGrid from '../layout/FormDataGrid';
 import { useNavigate } from 'react-router-dom';
 import api from "../../api";
 
-function PagamentosTable() {
+function PedidosTable() {
   const [rows, setRows] = useState([])
   const navigate = useNavigate()
 
@@ -16,7 +16,7 @@ function PagamentosTable() {
 
   const getAll = () => {
     api
-      .get('/api/pagamentos/')
+      .get('/api/pedidos/')
       .then((res) => res.data)
       .then((data) => {
         setRows(data);
@@ -26,10 +26,10 @@ function PagamentosTable() {
 
   const deleteRow = (id) => {
     api
-        .delete(`/api/pagamentos/${id}/`)
+        .delete(`/api/pedidos/${id}/`)
         .then((res) => {
-            if (res.status === 204) alert("Pagamento deletado!");
-            else alert("Falha ao deletar pagamento.");
+            if (res.status === 204) alert("Pedido deletado!");
+            else alert("Falha ao deletar Pedido.");
             getAll();
         })
         .then(data => {
@@ -40,7 +40,7 @@ function PagamentosTable() {
 };
   
   const handleEdit = (id) => {
-    navigate(`/pagamento/editar/${id}`);
+    navigate(`/pedido/editar/${id}`);
   };
 
   const handleDelete = (id) => {
@@ -49,14 +49,11 @@ function PagamentosTable() {
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'fornecedor_nome', headerName: 'Fornecedor', width: 150 },
-    { field: 'classe', headerName: 'Classe', width: 100 },
-    { field: 'tipo', headerName: 'Tipo', width: 150 },
-    { field: 'descricao', headerName: 'Descrição', width: 300 },
-    { field: 'valor', headerName: 'Valor', width: 150 },
-    { field: 'data_emissao', headerName: 'Data emissão', width: 200 },
-    { field: 'data_vencimento', headerName: 'Data vencimento', width: 200 },
-    { field: 'status', headerName: 'Status', type: 'text', width: 100 },
+    { field: 'nome_cliente', headerName: 'Nome do Cliente', type: 'text', width: 200 },
+    { field: 'estoque_atual', headerName: 'Estoque', width: 100 },
+    { field: 'data_pedido', headerName: 'Data Pedido', width: 150 },
+    { field: 'status', headerName: 'Status', width: 100 },
+    { field: 'total', headerName: 'Total', type: 'number', width: 100 },
     {
       field: 'Opções',
       headerName: 'Opções',
@@ -67,6 +64,7 @@ function PagamentosTable() {
             color="primary" 
             onClick={() => handleEdit(params.id)}
             aria-label="editar"
+            sx={{ backgroundColor: '#white', color: '#7A9E7E', '&:hover': { color: '#D8A39D' } }}
           >
             <EditIcon />
           </IconButton>
@@ -87,4 +85,4 @@ function PagamentosTable() {
   );
 }
 
-export default PagamentosTable
+export default PedidosTable

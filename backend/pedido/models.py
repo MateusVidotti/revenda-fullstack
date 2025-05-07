@@ -1,7 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from cliente.models import Cliente
 from produto.models import Produto
+
 
 
 class Pedido(models.Model):
@@ -12,7 +14,7 @@ class Pedido(models.Model):
     ]
 
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    data_pedido = models.DateField(auto_now_add=True)
+    data_pedido = models.DateField(default=timezone.now)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pendente')
 

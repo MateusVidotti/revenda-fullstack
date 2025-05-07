@@ -14,9 +14,9 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import logo from '../../assets/img/logo_natura_rec.png';
+import logo from '../../assets/img/logo_natura.png';
 
-const pages = ['Painel', 'Clientes', 'Produtos', 'Vendas', 'Pagamentos de Produtos', ];
+const pages = ['Painel', 'Clientes', 'Produtos', 'Pedidos', 'Ressuprimentos', ];
 const settings = ['Profile', 'Account', 'Painel', 'Logout'];
 
 function Navbar() {
@@ -27,7 +27,6 @@ function Navbar() {
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
-    console.log(event.currentTarget);
   };
   const handleOpenUserMenu = (event) => {
     
@@ -49,7 +48,6 @@ function Navbar() {
   }
 
   const handleLogout = () => {
-    console.log('logout')
     handleNavigate('/logout'); // Direciona para a URL de logout
   };
 

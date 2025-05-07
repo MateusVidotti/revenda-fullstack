@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from pedido.models import Pedido, ItemPedido
-from produto.models import Produto
 
 
 class ItemPedidoSerializer(serializers.ModelSerializer):
@@ -14,12 +13,13 @@ class ItemPedidoSerializer(serializers.ModelSerializer):
 
 class PedidoSerializer(serializers.ModelSerializer):
     itens = ItemPedidoSerializer(many=True)
+    nome_cliente = serializers.CharField(source='cliente.nome', read_only=True)
     total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = Pedido
-        fields = ['id', 'cliente', 'data_pedido', 'status', 'total', 'itens']
-        read_only_fields = ['data_pedido', 'total']
+        fields = ['id', 'cliente', 'nome_cliente', 'data_pedido', 'status', 'total', 'itens']
+        read_only_fields = ['data_pedido', 'total', 'nome_cliente']
 
     def create(self, validated_data):
         itens_data = validated_data.pop('itens')
