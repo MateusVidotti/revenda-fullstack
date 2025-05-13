@@ -49,11 +49,11 @@ function RessuprimentoTable() {
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'produto_nome', headerName: 'Nome do produto', type: 'text', width: 150 },
+    { field: 'produto_nome', headerName: 'Nome do produto', type: 'text', width: 600 },
     { field: 'quantidade', headerName: 'Quantidade', width: 70 },
     { field: 'total', headerName: 'Total', width: 70 },
-    { field: 'data_pedido', headerName: 'Demanda Data Pedido', width: 100 },
-    { field: 'data_recebimento', headerName: 'Data recebimento', width: 100 },
+    { field: 'data_pedido', headerName: 'Data Pedido', width: 130 },
+    { field: 'data_recebimento', headerName: 'Data recebimento', width: 130 },
     { field: 'status', headerName: 'Status recebimento', width: 150 },
     {
       field: 'Opções',

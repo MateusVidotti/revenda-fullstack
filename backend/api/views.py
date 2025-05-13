@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from datetime import datetime
+from decimal import Decimal
 from .serializers import SaldoMensalSerializer, HomeSerializer
 from pagamento.models import Pagamento
 from ressuprimento.models import Ressuprimento
@@ -128,9 +129,8 @@ class HomeAPIView(APIView):
             total_recebido=Sum('valor_pago')
         )['total_recebido'] or 0
 
-        total_pago = Ressuprimento.objects.filter(data_recebimento__isnull=False).aggregate(
-            total_pago=Sum('total')
-        )['total_pago'] or 0
+        ressuprimentos = Ressuprimento.objects.filter(data_recebimento__isnull=False)
+        total_pago = sum((r.total for r in ressuprimentos), Decimal('0.00'))
 
         # Calcula o saldo atual
         saldo = total_recebido - total_pago

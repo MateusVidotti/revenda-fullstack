@@ -206,7 +206,12 @@ const PedidoForm = () => {
               onChange={handleNovoItemChange}
               inputProps={{ min: 1 }}
             />
-            <Button variant="contained" onClick={adicionarItem}>Adicionar</Button>
+            <Button 
+              variant="contained" 
+              onClick={adicionarItem}
+              sx={{ backgroundColor: '#7A9E7E', width: '200px', '&:hover': { backgroundColor: '#D8A39D' } }}>
+            Adicionar
+            </Button>
           </Box>
           {errors.itens && (
             <Typography variant="caption" color="error">

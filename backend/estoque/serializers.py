@@ -20,6 +20,7 @@ class RelatorioEstoqueSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'nome',
+            'categoria',
             'estoque_atual',
             'demanda_semanal',
             'quantidade_indicada_ressuprimento',

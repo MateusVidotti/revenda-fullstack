@@ -10,6 +10,6 @@ export default defineConfig({
       usePolling: true
     },
      host: true,
-     port: process.env.PORT || 5173, // Use a porta fornecida pelo Fly.io ou a porta 80 como padrão
+     port: process.env.PORT || 80, // Use a porta fornecida pelo Fly.io ou a porta 80 como padrão
   }
 })

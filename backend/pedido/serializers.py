@@ -15,10 +15,11 @@ class PedidoSerializer(serializers.ModelSerializer):
     itens = ItemPedidoSerializer(many=True)
     nome_cliente = serializers.CharField(source='cliente.nome', read_only=True)
     total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    data_pedido = serializers.DateField(read_only=True)
 
     class Meta:
         model = Pedido
-        fields = ['id', 'cliente', 'nome_cliente', 'data_pedido', 'status', 'total', 'itens']
+        fields = ['id', 'cliente', 'nome_cliente', 'status', 'total', 'itens', 'data_pedido']
         read_only_fields = ['data_pedido', 'total', 'nome_cliente']
 
     def create(self, validated_data):

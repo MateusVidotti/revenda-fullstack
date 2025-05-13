@@ -5,7 +5,7 @@ class Produto(models.Model):
     CATEGORIAS = [
         ('Feminino', 'Feminino'),
         ('Masculino', 'Masculino'),
-        ('Infanto Juvenil', 'Infanto Juvenil'),
+        ('Outros', 'Outros'),
     ]
     nome = models.CharField(max_length=100)
     codigo_natura = models.CharField(max_length=50, unique=True)

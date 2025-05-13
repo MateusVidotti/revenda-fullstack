@@ -4,7 +4,7 @@ import { TextField, Button, Box, Typography, Paper, MenuItem, Select, InputLabel
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api';
 
-const produtoCategoria = ['Feminino', 'Masculino', 'Infanto Juvenil'];
+const produtoCategoria = ['Feminino', 'Masculino', 'Outros'];
 
 const ProdutoForm = () => {
   const { id } = useParams(); // Verifica se há um ID para edição
@@ -117,7 +117,7 @@ const ProdutoForm = () => {
           <TextField
             select
             fullWidth
-            label="Caetegoria"
+            label="Categoria"
             name="categoria"
             value={formData.categoria}
             onChange={handleChange}

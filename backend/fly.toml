@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for backend-patient-dust-1113 on 2024-11-03T08:20:53-03:00
+# fly.toml app configuration file generated for backend-dry-night-8200 on 2025-05-07T21:24:36-03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'backend-patient-dust-1113'
+app = 'backend-dry-night-8200'
 primary_region = 'ams'
 console_command = '/code/manage.py shell'
 
@@ -29,3 +29,7 @@ console_command = '/code/manage.py shell'
 [[statics]]
   guest_path = '/code/static'
   url_prefix = '/static/'
+
+[mounts]
+  source = "db_data"
+  destination = "/data"

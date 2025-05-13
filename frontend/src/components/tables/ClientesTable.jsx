@@ -49,7 +49,7 @@ function ClientesTable() {
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'nome', headerName: 'Nome', width: 150 },
+    { field: 'nome', headerName: 'Nome', width: 600 },
     { field: 'telefone', headerName: 'Telefone', width: 150 },
     { field: 'documento', headerName: 'Documento', type: 'text', width: 150 },
     { field: 'logradouro', headerName: 'Logradouro', type: 'text', width: 200 },

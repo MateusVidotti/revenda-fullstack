@@ -50,7 +50,6 @@ function PedidosTable() {
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'nome_cliente', headerName: 'Nome do Cliente', type: 'text', width: 200 },
-    { field: 'estoque_atual', headerName: 'Estoque', width: 100 },
     { field: 'data_pedido', headerName: 'Data Pedido', width: 150 },
     { field: 'status', headerName: 'Status', width: 100 },
     { field: 'total', headerName: 'Total', type: 'number', width: 100 },
